@@ -1,0 +1,49 @@
+from selenium import webdriver 
+from selenium.webdriver.common.by import By 
+from selenium.webdriver.common.keys import Keys 
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support import expected_conditions as EC 
+import time 
+ 
+# Initialize the browser 
+driver = webdriver.Chrome() 
+ 
+# Open AutomationExercise website 
+driver.get("https://automationexercise.com/") 
+driver.maximize_window() 
+ 
+# Log in to the account (assuming pre-existing login data) 
+driver.find_element(By.LINK_TEXT, "Login").click() 
+driver.find_element(By.ID, "email").send_keys("testuser@example.com") 
+driver.find_element(By.ID, "password").send_keys("securepassword", Keys.RETURN) 
+ 
+# Add product to cart 
+driver.find_element(By.LINK_TEXT, "Products").click() 
+product = WebDriverWait(driver, 10).until( 
+    EC.element_to_be_clickable((By.XPATH, "//a[@href='/product_details/1']")) 
+) 
+product.click() 
+driver.find_element(By.CLASS_NAME, "add-to-cart").click() 
+ 
+# Proceed to checkout 
+driver.find_element(By.LINK_TEXT, "Cart").click() 
+driver.find_element(By.LINK_TEXT, "Proceed To Checkout").click() 
+ 
+# Enter shipping and billing information 
+driver.find_element(By.ID, "address1").send_keys("123 Test St.") 
+driver.find_element(By.ID, "city").send_keys("Testville") 
+driver.find_element(By.ID, "state").send_keys("TestState") 
+driver.find_element(By.ID, "zipcode").send_keys("12345") 
+driver.find_element(By.ID, "phone").send_keys("1234567890") 
+ 
+# Complete the order 
+driver.find_element(By.LINK_TEXT, "Place Order").click() 
+ 
+# Confirmation 
+confirmation_message = WebDriverWait(driver, 10).until( 
+    EC.presence_of_element_located((By.XPATH, "//h2[text()='Order Confirmation']")) 
+) 
+assert "Order Confirmation" in confirmation_message.text 
+ 
+# Close the browser 
+driver.quit() 
